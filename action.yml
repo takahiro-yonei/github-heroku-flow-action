@@ -81,7 +81,6 @@ runs:
 
     # this action must be preceeded by the actions/checkout to retrieve the source code
     # files filtering must happen at checkout (see sparse-checkout from https://github.com/actions/checkout), 
-    # here everything is included using find to avoid tar unwanted options injection in case the source repo has been compromised (with files name that mimic tar options e.g. "--checkpoint-action=exec=sh shell.sh")
     # tar output file is created under /tmp to avoid the "warning file changed as we read it" that forces exit code to 1
     # .git folder is removed before creating the tar if remove-git-folder is true - .git folder is the only dir that cannot be filtered by checkout
     - name: Compress Source Code
@@ -92,7 +91,7 @@ runs:
       run: |
         [[ "$IN_REMOVE_GIT_FOLDER" == "true" ]] && { echo "Removing .git folder ..." ; rm -rf .git; }
         echo "Compressing Source Code ..."
-        find . -name "*" -print0 | xargs -0 tar -czvf /tmp/source.tar.gz
+        tar -czvf /tmp/source.tar.gz .
     
     # SOURCE_ENDPOINT_GET/PUT are masked to avoid being logged in clear text
     # jq -ec is used to have a single JSON object per line as ::add-mask:: does not work with multilines
